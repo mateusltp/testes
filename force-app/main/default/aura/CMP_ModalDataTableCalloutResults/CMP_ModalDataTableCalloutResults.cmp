@@ -1,0 +1,50 @@
+<aura:component access="global">
+	    
+    <!-- Attributes -->  
+    <aura:attribute name="titleMODAL" type="String"/>
+    <!--<aura:attribute name="objectTypeMODAL" type="String"/>-->
+    <aura:attribute name="dataTableColumnsMODAL" type="List"/>
+    <aura:attribute name="dataTableDataMODAL" type="Object"/>
+	<lightning:overlayLibrary aura:id="overlayLib"/>
+  <aura:attribute name="pdfContainer" type="Aura.Component[]"/>
+
+    <!-- Init --> 
+    <aura:method name="showModal" action="{!c.showModal}" access="PUBLIC" />
+    
+    <div aura:id="modalDataTable">
+        <section aura:id="Modalbox" role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-modal_large">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h2 class="slds-text-heading--medium">{!v.titleMODAL}</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+			        <aura:if isTrue = "{!v.dataTableDataMODAL.length > 0}" >
+	                  
+	                    <lightning:datatable aura:id="accountDataTable"
+	                    	keyField="policy"
+	                        columns="{!v.dataTableColumnsMODAL}"
+	                        data="{!v.dataTableDataMODAL}" 
+	                        hideCheckboxColumn="true"
+ 			               onrowaction="{! c.handleRowAction }"
+                                             
+	                        />
+
+					        <!-- 
+								ELSE
+					    	--> 
+                            
+	                        <aura:set attribute="else">
+	                        	<div class="slds-m-top_small"></div>
+                                <img src="/img/search/no-results.png" style= "width:10vw;display: block;margin-left: auto;margin-right: auto;"/>
+                                <div class="slds-text-align_center">{!$Label.c.COMPONENTTileCalloutResults_NoResults}</div>
+ 				    		</aura:set>   
+                        </aura:if>            	
+               	</div> 	
+               	<footer class="slds-modal__footer">
+               		<lightning:button variant="brand" label="{!$Label.c.MODALDataTableCalloutResults_Close}" onclick="{!c.hideModal}"/>
+               	</footer>	
+            </div>
+        </section>
+    </div>
+    <div class="slds-backdrop " aura:id="Modalbackdrop"></div>       
+</aura:component>

@@ -1,0 +1,7 @@
+<design:component>
+    <design:attribute name="componentTitle" label="Enter Component Title"/>
+	<design:attribute name="serviceName" label="Enter Service Name"/>
+	<design:attribute name="iconName" label="Enter Icon Name"/>
+	<design:attribute name="loadStartup" label="Load at startup" datasource="True, False" default="False"/>
+	<design:attribute name="listType" label="List Type" datasource="Record,File" default="Record" />
+</design:component>

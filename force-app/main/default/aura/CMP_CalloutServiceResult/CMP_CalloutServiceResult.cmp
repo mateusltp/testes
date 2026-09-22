@@ -1,0 +1,136 @@
+<!--
+  @File Name          : COMPONENTCalloutService.cmp
+  @Description        : 
+  @Author             : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Group              : 
+  @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Last Modified On   : 17/3/2020 16:54:15
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    7/3/2020   ChangeMeIn@UserSettingsUnder.SFDoc     Initial Version
+-->
+<aura:component controller="CTR_CalloutServiceResult" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes">
+
+    <!-- Design Attributes -->    
+    <aura:attribute name="componentTitle" type="String" access="global"/>
+    <aura:attribute name="serviceName" type="String" access="global"/>
+    <aura:attribute name="iconName" type="String" access="global"/>
+    <aura:attribute name="loadStartup" type="String" access="global"/>
+    <aura:attribute name="showLoading" type="Boolean" default="false" />
+    <aura:attribute name="modeFileList" type="Boolean" default="false" access="global" />
+    <!-- Attributes -->
+    <aura:attribute name="allColumns" type="String"/>
+    <aura:attribute name="dataTableColumns" type="List"/>
+    <aura:attribute name="dataTableData" type="Object"/>
+    <aura:attribute name="objectData" type="Object"/>
+    <aura:attribute name="previewData" type="Map"/>
+    <aura:attribute name="dataList" type="List"/>
+    <aura:attribute name="contentData" type="String" />
+    <aura:attribute name="fileName" type="String" />
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <aura:attribute name="pdfContainer" type="Aura.Component[]"/>
+    <aura:attribute name="listType" type="String" />
+  <!-- Init --> 
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  
+  <article class="slds-card forceRelatedListCardDesktop">
+  <div class="slds-grid slds-page-header forceRelatedListCardHeader">
+    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+        <div class="slds-media__figure">
+	        <lightning:icon size="small" iconName="{!v.iconName}" variant="border-filled" />
+        </div>
+        <div class="slds-media__body">
+            <h2>
+                <span class="slds-card__header-link baseCard__header-title-container" href="javascript:void(0)" >
+                    <span class="slds-card__header-title slds-truncate slds-m-right--xx-small" title="{!v.componentTitle}" >{!v.componentTitle}</span>
+                    <span class="slds-card__header-title slds-shrink-none slds-m-right--xx-small" title="{!' (' + if(!not(empty(v.objectData)), '0', v.objectData.length) + ')'}" >{!'(' + if(!not(empty(v.objectData)), '0', v.objectData.length) + ')'}</span>
+                </span>                       
+            </h2>
+		</div>
+      <div class="slds-no-flex">
+        <aura:if isTrue="{!!v.showLoading}" >
+			<lightning:buttonIcon iconName="utility:refresh" variant="border-filled" onclick="{!c.onLoad}"/>
+        </aura:if>            
+      </div>
+    </header>
+  </div>
+	<aura:if isTrue="{!v.showLoading}" >
+           <div class="loading">
+               <lightning:spinner alternativeText="Cargando.." size="large" />
+           </div>
+	<aura:set attribute="else">          
+    <div class="slds-card__body">
+	<aura:if isTrue = "{!v.objectData.length > 0}" >       
+        <ul class="slds-card__body_inner slds-grid slds-wrap slds-grid_pull-padded">
+        <aura:if isTrue = "{!equals(v.listType,'File')}" >
+			<aura:iteration items="{!v.dataTableData}" var="item">
+        	<li class="slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-1" style="padding-bottom:10px">
+				<div class="slds-size_12-of-12 slds-grid" >
+                    <div class="slds-show_inline-block slds-float_left slds-align-middle thumbnailImg medium" >
+                        <div data-aura-rendered-by="6902:0">
+                            <span data-aura-rendered-by="6914:0">
+                                <lightning:icon iconName="doctype:pdf" alternativeText="Image file" title="Image" />
+                                </span>
+                            </div>
+                    </div>
+                    <div class="slds-show_inline-block slds-float_left slds-p-left--x-small slds-truncate slds-m-right_x-small" data-aura-rendered-by="6918:0">
+                            <a href="javascript:void()" onclick="{!c.openDocument}" data-contentdata="{!item.documentContent}" ><span class="itemTitle slds-text-body--regulardesktop uiOutputText" title="{!item.name}" data-aura-class="uiOutputText">{!item.name}</span></a>
+                            <p class="slds-m-around--none secondaryFields slds-text-body--small slds-truncate" data-aura-rendered-by="6922:0">
+                                <span class="itemLabel slds-truncate uiOutputText" data-aura-rendered-by="6941:0" data-aura-class="uiOutputText">{!item.description}</span><!--render facet: 6942:0--><!--render facet: 6943:0--></p>
+                    </div>
+                </div>
+            </li>
+			</aura:iteration>    
+		<aura:set attribute="else">    
+       
+            <aura:iteration items="{!v.previewData}" var="records" indexVar="key" end="4">
+            <li class="slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-1">
+              <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                <div class="slds-media__body">
+                  <div class="slds-tile__detail slds-m-left_x-small">
+                    <dl class="slds-list_horizontal slds-wrap">
+                      <aura:iteration items="{!records.value}" var="col" >
+                      <dt class="slds-item_label slds-text-color_weak slds-truncate" 
+                          title="{!col.key}">{!col.key}</dt>
+                      <dd class="slds-item_detail slds-truncate" title="">
+                        <aura:if isTrue="{!col.type == 'link'}">
+                          <a onclick="{!c.navigateToLink}" data-attriVal="{!records.key}">
+                            {!col.value}
+                          </a>
+                          <aura:set attribute="else">
+                            {!col.value}
+                          </aura:set>
+                        </aura:if>
+                      </dd>
+                      </aura:iteration>
+                    </dl>
+                  </div>
+                </div>
+              </article>
+                
+            </li>
+          </aura:iteration>
+         </aura:set> 
+		</aura:if>   
+        </ul>	
+		{!v.body}          
+        <aura:set attribute="else">
+	        <aura:if isTrue="{!v.objectData != null}" >
+		        <div class="slds-m-top_small"></div>
+                
+		        <img src="/img/search/no-results.png" style= "width:5vw;display: block;margin-left: auto;margin-right: auto;"/>
+		        <div class="slds-text-align_center">{!$Label.c.COMPONENTTileCalloutResults_NoResults}</div>
+	        </aura:if>
+	 			</aura:set>
+      </aura:if>
+	</div>
+    <aura:if isTrue="{!not(empty(v.objectData))}">
+        <footer class="slds-card__footer">
+          <a onclick="{!c.showModal}">{!$Label.c.COMPONENTTileCalloutResults_ViewAll}</a>
+        </footer>
+    </aura:if>
+	</aura:set>        
+	</aura:if> 
+    <c:CMP_ModalDataTableCalloutResults aura:id="modalView" titleMODAL="{!v.componentTitle + ' (' + v.dataTableData.length + ')'}" dataTableColumnsMODAL="{!v.dataTableColumns}" dataTableDataMODAL="{!v.dataTableData}"/>
+</article>
+</aura:component>
