@@ -12,9 +12,22 @@
 global with sharing class CTR_CalloutServiceResult {
 	
     public static Boolean stopCallout = false;
+    private static final Boolean USE_MOCK = false;
     
     @AuraEnabled
     global static Object getResultService(String serviceName, String recordId){
+        
+        if (USE_MOCK) {
+            Map<String, Object> mockData =
+                CalloutServiceResultMock.getMockData(serviceName);
+            
+            System.debug(
+                '>>> RETORNANDO DADOS MOCK: ' +
+                JSON.serialize(mockData)
+            );
+            
+            return mockData;
+        }
 
         Map<String,Object> mapOutput = new Map<String,Object>();
 		ConfigurationService__mdt configService = new ConfigurationService__mdt();
@@ -338,6 +351,7 @@ global with sharing class CTR_CalloutServiceResult {
         public String source;
         public String description;
         public String mimeType;
+        
     }
     class Parameter{
         public String name;

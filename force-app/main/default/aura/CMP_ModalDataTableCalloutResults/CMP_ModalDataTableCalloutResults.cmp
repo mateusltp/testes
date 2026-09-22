@@ -36,18 +36,16 @@
                     </div>
                     
                     <aura:if isTrue = "{!v.displayData.length > 0}" >
-	                  
-	                    <lightning:datatable aura:id="accountDataTable"
-	                    	keyField="policy"
-                            columns="{!v.displayColumns}"
-                            data="{!v.displayData}"
-                            sortedBy="{!v.sortedBy}"
-                            sortedDirection="{!v.sortedDirection}"
-                            onsort="{!c.handleSort}"
-	                        hideCheckboxColumn="true"
- 			               onrowaction="{! c.handleRowAction }"
-                                             
-	                        />
+                        
+                        <lightning:datatable aura:id="accountDataTable"
+                                             keyField="policy"
+                                             columns="{!v.displayColumns}"
+                                             data="{!v.displayData}"
+                                             sortedBy="{!v.sortedBy}"
+                                             sortedDirection="{!v.sortedDirection}"
+                                             onsort="{!c.handleSort}"
+                                             hideCheckboxColumn="true"
+                                             onrowaction="{! c.handleRowAction }"/>
 
 					        <!-- 
 								ELSE
