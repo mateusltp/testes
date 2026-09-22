@@ -5,6 +5,10 @@
         <members>CTR_CalloutServiceResult</members>
         <name>ApexClass</name>
     </types>
+      <types>
+        <members>MODALDataTableCalloutResults_Search</members>
+        <name>CustomLabel</name>
+    </types>
     <types>
         <members>CMP_CalloutServiceResult</members>
         <members>CMP_ModalDataTableCalloutResults</members>

@@ -3,8 +3,14 @@
     <!-- Attributes -->  
     <aura:attribute name="titleMODAL" type="String"/>
     <!--<aura:attribute name="objectTypeMODAL" type="String"/>-->
-    <aura:attribute name="dataTableColumnsMODAL" type="List"/>
+    <aura:attribute name="dataTableColumnsMODAL" type="List" default="[]"/>
     <aura:attribute name="dataTableDataMODAL" type="Object"/>
+    <aura:attribute name="displayColumns" type="List" default="[]"/>
+    <aura:attribute name="originalData" type="List" default="[]"/>
+    <aura:attribute name="displayData" type="List" default="[]"/>
+    <aura:attribute name="searchTerm" type="String" default=""/>
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="sortedDirection" type="String" default="asc"/>
 	<lightning:overlayLibrary aura:id="overlayLib"/>
   <aura:attribute name="pdfContainer" type="Aura.Component[]"/>
 
@@ -18,12 +24,26 @@
                     <h2 class="slds-text-heading--medium">{!v.titleMODAL}</h2>
                 </div>
                 <div class="slds-modal__content slds-p-around--medium">
-			        <aura:if isTrue = "{!v.dataTableDataMODAL.length > 0}" >
+                    
+                    <div class="slds-grid slds-grid_align-center slds-m-bottom_small">
+                        <div class="slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">                       
+                            <lightning:input type="search"
+                                             placeholder="{!$Label.c.MODALDataTableCalloutResults_Search}"
+                                             value="{!v.searchTerm}"
+                                             onchange="{!c.handleSearch}"
+                                             class="slds-m-bottom_small"/>
+                        </div>
+                    </div>
+                    
+                    <aura:if isTrue = "{!v.displayData.length > 0}" >
 	                  
 	                    <lightning:datatable aura:id="accountDataTable"
 	                    	keyField="policy"
-	                        columns="{!v.dataTableColumnsMODAL}"
-	                        data="{!v.dataTableDataMODAL}" 
+                            columns="{!v.displayColumns}"
+                            data="{!v.displayData}"
+                            sortedBy="{!v.sortedBy}"
+                            sortedDirection="{!v.sortedDirection}"
+                            onsort="{!c.handleSort}"
 	                        hideCheckboxColumn="true"
  			               onrowaction="{! c.handleRowAction }"
                                              
