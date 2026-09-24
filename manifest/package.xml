@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 
-    <!-- Package RF02472257 SD07964845 CLIENT-4460
+    <!-- Package RF02468741 SD07955785 CLIENT-4356
       <types>
         <members>SRV_UY_AuxQueryParameters</members>
         <members>CTR_CalloutServiceResult</members>
@@ -11,7 +11,7 @@
 
     <!-- Package RF02472257 SD07964845 CLIENT-4460-->
       <types>
-        <members>Campaign_DefaultCampaignMemberRecordType</members>
+        <members>CampaignMemberRecordTypeAssignment</members>
         <name>Flow</name>
     </types>
       <types>
