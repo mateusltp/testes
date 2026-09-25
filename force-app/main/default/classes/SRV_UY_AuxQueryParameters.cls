@@ -9,10 +9,11 @@ public with sharing class SRV_UY_AuxQueryParameters extends SRV_AuxQueryBase {
         else{
             urlParams.put('%%Code%%', System.Label.UY_GenericAgentCode);
         }
-        urlParams.put('%%Key%%', crrntUser.Key__c);
+        String userKey = crrntUser.Key__c != null ? crrntUser.Key__c : '';
+        urlParams.put('%%Key%%', userKey);
         
         return urlParams;
-
-
+        
+        
     }    
 }

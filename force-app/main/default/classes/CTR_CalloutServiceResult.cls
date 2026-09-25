@@ -100,7 +100,7 @@ global with sharing class CTR_CalloutServiceResult {
             	records = (List<Object>)JSON.deserializeUntyped(bodyResult);
             }
             
-            
+            records = applyConfigurationFilter(records, configService.Filter__c);
             
 			Map<String,Map<String,String>> previewData = new Map<String,Map<String,String>>();
 			Integer index = 0;
@@ -134,7 +134,8 @@ global with sharing class CTR_CalloutServiceResult {
                                 }
                             }when 'date'{
                                 if (value != null) {
-                                    data =  ((Date)JSON.deserialize('"'+((String)value).replace('T00:00:00','') + '"',Date.class)).format();
+                                    Date dt = (Date)JSON.deserialize('"'+((String)value).replace('T00:00:00','') + '"', Date.class);
+                                    data = DateTime.newInstance(dt.year(), dt.month(), dt.day()).format('dd/MM/yyyy');
                                 }else {
                                     data = null;
                                 }
@@ -155,7 +156,8 @@ global with sharing class CTR_CalloutServiceResult {
             }
 
             mapOutput.put('columns',configService.Columns__c.replace('"datetime"','"date"'));
-            mapOutput.put('data',bodyResult);
+            mapOutput.put('data',JSON.serialize(records));
+            //mapOutput.put('data',bodyResult);
             mapOutput.put('preview',previewData); 
           }      
         } catch (CalloutException e) {
@@ -165,7 +167,74 @@ global with sharing class CTR_CalloutServiceResult {
         return mapOutput;
 
 	}
-
+    
+    private static List<Object> applyConfigurationFilter(
+        List<Object> records,
+        String filterJson
+    ){
+        if(records == null || records.isEmpty() || String.isBlank(filterJson)){
+            return records;
+        }
+        
+        Map<String, Object> filterConfig;
+        
+        try {
+            filterConfig = (Map<String, Object>) JSON.deserializeUntyped(filterJson);
+        } catch(Exception e){
+            System.debug(
+                '>>> [CTR_CalloutServiceResult] Erro ao interpretar Filter__c: ' +
+                e.getMessage()
+            );
+            return records;
+        }
+        
+        String fieldName = (String) filterConfig.get('fieldName');
+        String filterType = (String) filterConfig.get('type');
+        
+        List<Object> filterValues = (List<Object>) filterConfig.get('values');
+        
+        if(
+            String.isBlank(fieldName) ||
+            String.isBlank(filterType) ||
+            filterValues == null ||
+            filterValues.isEmpty()
+        ){
+            return records;
+        }
+        
+        Set<String> values = new Set<String>();
+        
+        for(Object value : filterValues){
+            if(value != null){
+                values.add(String.valueOf(value));
+            }
+        }
+        
+        List<Object> filteredRecords = new List<Object>();
+        
+        for(Object record : records){
+            
+            Map<String, Object> recordMap =
+                (Map<String, Object>) record;
+            
+            String recordValue = recordMap.containsKey(fieldName)
+                ? String.valueOf(recordMap.get(fieldName))
+                : null;
+            
+            Boolean containsValue = values.contains(recordValue);
+            
+            if(filterType == 'INCLUDE' && containsValue){
+                filteredRecords.add(record);
+            }
+            
+            if(filterType == 'EXCLUDE' && !containsValue){
+                filteredRecords.add(record);
+            }
+        }
+        
+        return filteredRecords;
+    }
+    
     @AuraEnabled
     global static Object getResultServiceRecord(String serviceName, String recordId){
 
@@ -351,7 +420,6 @@ global with sharing class CTR_CalloutServiceResult {
         public String source;
         public String description;
         public String mimeType;
-        
     }
     class Parameter{
         public String name;

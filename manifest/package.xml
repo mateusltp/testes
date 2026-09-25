@@ -13,15 +13,30 @@
     </types>
     -->
 
-    <!-- Package RF02468741 SD07955785 CLIENT-4356
+    <!-- Package RF02468741 SD07955785 CLIENT-4356 
+
+    -->
       <types>
-        <members>SRV_UY_AuxQueryParameters</members>
+        <members>SRV_UY_AuxQueryParameters</members> 
         <members>CTR_CalloutServiceResult</members>
         <name>ApexClass</name>
     </types>
-    -->
+    <types>
+        <members>ConfigurationService__mdt.Filter__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>ConfigurationService.UY_ClaimsByCustomer</members>
+        <members>ConfigurationService.UY_AssistanceByCustomer</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>UY_BusinessAccount</members>
+        <name>FlexiPage</name>
+    </types>
 
-    <!-- Package RF02472257 SD07964845 CLIENT-4460 -->
+
+    <!-- Package RF02472257 SD07964845 CLIENT-4460 
       <types>
         <members>CampaignMemberRecordTypeAssignment</members>
         <name>Flow</name>
@@ -30,7 +45,7 @@
         <members>Campaign-USERCampaignUY</members>
         <name>Layout</name>
     </types>
-    
+    -->
 
     <!-- Package RF02459782 SD07933062 CLIENT-4281
       <types>
@@ -48,5 +63,5 @@
     </types>
     -->
     
-    <version>67.0</version>
+    <version>59.0</version>
 </Package>

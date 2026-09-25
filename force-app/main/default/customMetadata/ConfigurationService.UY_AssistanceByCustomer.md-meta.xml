@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>UY_AssistanceByCustomer</label>
+    <protected>false</protected>
+    <values>
+        <field>Columns__c</field>
+        <value xsi:type="xsd:string">[
+{&quot;fieldName&quot;:&quot;claimNumber&quot;,&quot;label&quot;:&quot;Número Siniestro&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true},
+{&quot;fieldName&quot;:&quot;claimDesc&quot;,&quot;label&quot;:&quot;Desc. Siniestro&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true},
+{&quot;fieldName&quot;:&quot;openDate&quot;,&quot;label&quot;:&quot;Fecha de apertura&quot;,&quot;type&quot;:&quot;date&quot;,&quot;showDefault&quot;:true},
+{&quot;fieldName&quot;:&quot;status&quot;,&quot;label&quot;:&quot;Estado&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true},
+{&quot;fieldName&quot;:&quot;policyId&quot;,&quot;label&quot;:&quot;Num Poliza&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true}
+]</value>
+    </values>
+    <values>
+        <field>Country__c</field>
+        <value xsi:type="xsd:string">LO_UY</value>
+    </values>
+    <values>
+        <field>Filter__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;fieldName&quot;: &quot;claimDesc&quot;,
+    &quot;type&quot;: &quot;INCLUDE&quot;,
+    &quot;values&quot;: [
+        &quot;ASISTENCIA POR ACCIDENTE&quot;,
+        &quot;ASISTENCIA POR AVERIA&quot;
+    ]
+}</value>
+    </values>
+    <values>
+        <field>JsonAttribute__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Parameters__c</field>
+        <value xsi:type="xsd:string">[{&quot;name&quot;:&quot;ClientId&quot;,&quot;value&quot;:&quot;IdExternal__c&quot;,&quot;type&quot;:&quot;field&quot;,&quot;auxQuery&quot; : &quot;UY_ClaimsByCustomer&quot;}]</value>
+    </values>
+    <values>
+        <field>ServiceName__c</field>
+        <value xsi:type="xsd:string">UY_ClaimsByCustomer</value>
+    </values>
+</CustomMetadata>
