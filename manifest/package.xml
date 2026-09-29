@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 
-    <!-- Package RF02478409 SD07980472 CLIENT-4531 -->
+    <!-- Package RF02478409 SD07980472 CLIENT-4531 
     <types>
         <members>TaskStatus</members>
         <name>StandardValueSet</name>
@@ -10,7 +10,7 @@
         <members>Task.PE_Task</members>
         <name>RecordType</name>
     </types>
-    
+    -->
 
     <!-- Package RF02466450 SD07950091 CLIENT-4591 
       <types>
@@ -31,10 +31,9 @@
     </types>
     -->
 
-    <!-- Package RF02468741 SD07955785 CLIENT-4356 
+    <!-- Package RF02468741 SD07955785 CLIENT-4356 -->
 
       <types>
-        <members>SRV_UY_AuxQueryParameters</members> 
         <members>CTR_CalloutServiceResult</members>
         <name>ApexClass</name>
     </types>
@@ -43,15 +42,20 @@
         <name>CustomField</name>
     </types>
     <types>
+        <members>ConfigurationService__mdt-Configuration%20Service%20Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
         <members>ConfigurationService.UY_ClaimsByCustomer</members>
         <members>ConfigurationService.UY_AssistanceByCustomer</members>
         <name>CustomMetadata</name>
     </types>
     <types>
         <members>UY_BusinessAccount</members>
+        <members>UY_PersonAccount_v2</members>
         <name>FlexiPage</name>
     </types>
-  -->
+  
 
     <!-- Package RF02472257 SD07964845 CLIENT-4460 
       <types>
@@ -64,7 +68,7 @@
     </types>
     -->
 
-    <!-- Package RF02459782 SD07933062 CLIENT-4281
+    <!-- Package RF02459782 SD07933062 CLIENT-4281 
       <types>
         <members>CTR_CalloutServiceResult</members>
         <name>ApexClass</name>

@@ -423,7 +423,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>componentTitle</name>
-                    <value>Siniestros en curso</value>
+                    <value>Siniestros</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>iconName</name>
@@ -443,6 +443,39 @@
                 </componentInstanceProperties>
                 <componentName>CMP_CalloutServiceResult</componentName>
                 <identifier>c_CMP_CalloutServiceResult</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.Type}</leftValue>
+                        <operator>NE</operator>
+                        <rightValue>01</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>componentTitle</name>
+                    <value>Asistencia</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>iconName</name>
+                    <value>standard:case_change_status</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>listType</name>
+                    <value>Record</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>loadStartup</name>
+                    <value>True</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>serviceName</name>
+                    <value>UY_AssistanceByCustomer</value>
+                </componentInstanceProperties>
+                <componentName>CMP_CalloutServiceResult</componentName>
+                <identifier>c_CMP_CalloutServiceResult4</identifier>
                 <visibilityRule>
                     <criteria>
                         <leftValue>{!Record.Type}</leftValue>
