@@ -47,31 +47,7 @@ global with sharing class CTR_CalloutServiceResult {
             
             //String jsonFile = '[{"documentId":"","documentData":{"documentContent":""},"documentMetadata":{"url":"","name":"POLIZA_3011310100153_15022021","type":"PDF","description":"POLIZA","dateCapture":"2021-02-15T22:04:12.266","status":"READY","URL":"","owner":"MAPFRE","size":0,"mimeType":"application/pdf","source":""}}]';
             String body;
-            /*
-                * MOCK
-                *
-                * O mock retorna somente os dados que seriam
-                * retornados pelo endpoint.
-                *
-                * A partir daqui o processamento é exatamente
-                * o mesmo utilizado pela integração real.
-            */
-            if (true) {
-                
-                Map<String, Object> mockData =
-                    CalloutServiceResultMock.getMockData(serviceName);
-                
-                body = (String)mockData.get('data');
-                
-                mapCallout.put('isError', false);
-                mapCallout.put('body', body);
-                
-                System.debug(
-                    '>>> DADOS MOCK UTILIZADOS COMO BODY DA INTEGRAÇÃO: ' +
-                    body
-                );
-                
-            } else {
+
                 if(serviceName.contains('Document')){ 
                     mapCallout = callout(configService.ServiceName__c,recordId,configService.parameters__c, strColumns); 
                     String jsonFile = (String)mapCallout.get('body'); 
@@ -92,7 +68,7 @@ global with sharing class CTR_CalloutServiceResult {
                     system.debug('mapCallout>> ' + mapCallout);
                     body = (String)mapCallout.get('body');
                 }
-            } 
+             
             if((Boolean) mapCallout.get('isError')){ 
                 return mapOutput; 
             }else{
@@ -101,11 +77,11 @@ global with sharing class CTR_CalloutServiceResult {
                 
                 List<Object> records;
                 /*if(String.isNotBlank(jsonAttribute)){
-Map<String,Object> mapRecord = (Map<String,Object>)JSON.deserializeUntyped(bodyResult);
-records = (List<Object>)mapRecord.get(jsonAttribute);
-bodyResult = JSON.serialize(records);
-}else{
-}*/
+                Map<String,Object> mapRecord = (Map<String,Object>)JSON.deserializeUntyped(bodyResult);
+                records = (List<Object>)mapRecord.get(jsonAttribute);
+                bodyResult = JSON.serialize(records);
+                }else{
+                }*/
                 if(configService.ServiceName__c.contains('querySF')){
                     records = (List<Object>)JSON.deserializeUntyped('['+bodyResult+']');
                 }else{
@@ -114,6 +90,8 @@ bodyResult = JSON.serialize(records);
                 
                 records = applyConfigurationFilter(records, configService.Filter__c);
                 
+                Boolean isUYUser = SEL_Users.newInstance().selectById(UserInfo.getUserId()).get(0).ISOCode__c == 'UY';
+
                 Map<String,Map<String,String>> previewData = new Map<String,Map<String,String>>();
                 Integer index = 0;
                 for(Object objRecord : records){
@@ -146,7 +124,12 @@ bodyResult = JSON.serialize(records);
                                     }
                                 }when 'date'{
                                     if (value != null) {
-                                        data =  ((Date)JSON.deserialize('"'+((String)value).replace('T00:00:00','') + '"',Date.class)).format();
+                                        Date dt = (Date)JSON.deserialize('"' + ((String)value).replace('T00:00:00','') + '"',Date.class);
+                                        if(isUYUser){
+                                            data = DateTime.newInstance(dt.year(),dt.month(),dt.day()).format('dd/MM/yyyy');
+                                        }else{
+                                            data =  dt.format();
+                                        }
                                     }else {
                                         data = null;
                                     }
