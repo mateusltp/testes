@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 
-    <!-- Package RF02478409 SD07980472 CLIENT-4531 
+    <!-- Package RF02478409 SD07980472 CLIENT-4531 -->
     <types>
         <members>TaskStatus</members>
         <name>StandardValueSet</name>
     </types>
-    -->
+    <types>
+        <members>Task.PE_Task</members>
+        <name>RecordType</name>
+    </types>
+    
 
     <!-- Package RF02466450 SD07950091 CLIENT-4591 
       <types>

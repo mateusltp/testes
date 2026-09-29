@@ -50,9 +50,9 @@
         <closed>true</closed>
     </standardValue>
     <standardValue>
-        <fullName>Concluído por Outra Área</fullName>
+        <fullName>Completed by Another Department</fullName>
         <default>false</default>
-        <label>Concluído por Outra Área</label>
+        <label>Completed by Another Department</label>
         <closed>true</closed>
     </standardValue>
 </StandardValueSet>
