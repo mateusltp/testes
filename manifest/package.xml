@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 
+    <!-- Package RF02466450 SD07950091 CLIENT-4591 -->
+      <types>
+        <members>Cuentas_con_contrato</members>
+        <name>ReportType</name>
+    </types>
+
+    
+
     <!-- Package RF02479719 SD07983744 CLIENT-4551 
       <types>
         <members>SRV_UY_LinkRequest</members>
