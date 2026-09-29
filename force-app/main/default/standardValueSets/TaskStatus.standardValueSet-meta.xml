@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sorted>false</sorted>
+    <standardValue>
+        <fullName>Open</fullName>
+        <default>true</default>
+        <label>Open</label>
+        <closed>false</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Assigned</fullName>
+        <default>false</default>
+        <label>Assigned</label>
+        <closed>false</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Scaled</fullName>
+        <default>false</default>
+        <label>Scaled</label>
+        <closed>false</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Completed</fullName>
+        <default>false</default>
+        <label>Completed</label>
+        <closed>true</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Completed Unsolved</fullName>
+        <default>false</default>
+        <label>Completed Unsolved</label>
+        <closed>true</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Expired</fullName>
+        <default>false</default>
+        <label>Expired</label>
+        <closed>false</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Canceled</fullName>
+        <default>false</default>
+        <label>Canceled</label>
+        <closed>true</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Rejection</fullName>
+        <default>false</default>
+        <label>Rejection</label>
+        <closed>true</closed>
+    </standardValue>
+    <standardValue>
+        <fullName>Concluído por Outra Área</fullName>
+        <default>false</default>
+        <label>Concluído por Outra Área</label>
+        <closed>true</closed>
+    </standardValue>
+</StandardValueSet>
