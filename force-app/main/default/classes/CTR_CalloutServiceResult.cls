@@ -1,43 +1,30 @@
 /**
- * @File Name          : CONTROLLERResultService.cls
- * @Description        : 
- * @Author             : Everis
- * @Group              : 
- * @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
- * @Last Modified On   : 27/3/2020 16:34:15
- * @Modification Log   : 
- * Ver      Date            Author      		                    Modification
- * 1.0      19/03/2020      ChangeMeIn@UserSettingsUnder.SFDoc      Initial Version
+* @File Name          : CONTROLLERResultService.cls
+* @Description        : 
+* @Author             : Everis
+* @Group              : 
+* @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+* @Last Modified On   : 27/3/2020 16:34:15
+* @Modification Log   : 
+* Ver      Date            Author      		                    Modification
+* 1.0      19/03/2020      ChangeMeIn@UserSettingsUnder.SFDoc      Initial Version
 **/
 global with sharing class CTR_CalloutServiceResult {
-	
+    
     public static Boolean stopCallout = false;
-    private static final Boolean USE_MOCK = false;
     
     @AuraEnabled
     global static Object getResultService(String serviceName, String recordId){
         
-        if (USE_MOCK) {
-            Map<String, Object> mockData =
-                CalloutServiceResultMock.getMockData(serviceName);
-            
-            System.debug(
-                '>>> RETORNANDO DADOS MOCK: ' +
-                JSON.serialize(mockData)
-            );
-            
-            return mockData;
-        }
-
         Map<String,Object> mapOutput = new Map<String,Object>();
-		ConfigurationService__mdt configService = new ConfigurationService__mdt();
-		
+        ConfigurationService__mdt configService = new ConfigurationService__mdt();
+        
         Map<String,Set<String>> configurationFilter = new Map<String,Set<String>>();
         configurationFilter.put('DeveloperName',new Set<String>{serviceName});
-		if (Schema.sObjectType.ConfigurationService__mdt.isAccessible()) {
-			configService = new SEL_ConfigurationServices().selectWithWhere(null, configurationFilter, null).get(0);
+        if (Schema.sObjectType.ConfigurationService__mdt.isAccessible()) {
+            configService = new SEL_ConfigurationServices().selectWithWhere(null, configurationFilter, null).get(0);
         }
-		
+        
         List<JSONColumn> columns = (List<JSONColumn>)JSON.deserialize(configService.Columns__c,List<JSONColumn>.class);
         Map<String,JSONColumn> mapColumn = new Map<String,JSONColumn>();
         List<String> lstColumns = new List<String>();
@@ -48,125 +35,149 @@ global with sharing class CTR_CalloutServiceResult {
             }else{ 
                 lstColumns.add(column.fieldName); 
             }
-	            
+            
         }
         String strColumns = String.join(lstColumns,',');
         
         Map<String, CalloutSettings__c> calloutSettings = CalloutSettings__c.getAll();
         Map<String,Object> mapCallout = new Map<String,Object>();
-
+        
         
         try {
             
             //String jsonFile = '[{"documentId":"","documentData":{"documentContent":""},"documentMetadata":{"url":"","name":"POLIZA_3011310100153_15022021","type":"PDF","description":"POLIZA","dateCapture":"2021-02-15T22:04:12.266","status":"READY","URL":"","owner":"MAPFRE","size":0,"mimeType":"application/pdf","source":""}}]';
             String body;
-            if(serviceName.contains('Document')){ 
-                mapCallout = callout(configService.ServiceName__c,recordId,configService.parameters__c, strColumns); 
-                String jsonFile = (String)mapCallout.get('body'); 
-                system.debug('jsonFile '+jsonFile); 
-                jsonFile = jsonFile.replace('"url":"",','');
-	                
-                List<JSONDocument> documents =  (List<JSONDocument>)JSON.deserializeStrict(jsonFile,List<JSONDocument>.class);
-                if(documents.size() > 0) { 
-                    List<JSONDocumentResult> documentsResult = new List<JSONDocumentResult>(); 
-                    for(JSONDocument jsonDoc : documents){
-                        //jsonDoc.documentData.documentContent = filePDF;
-                        documentsResult.add(new JSONDocumentResult(jsonDoc));
-                    } 
-                    body = JSON.serialize(documentsResult); 
+            /*
+                * MOCK
+                *
+                * O mock retorna somente os dados que seriam
+                * retornados pelo endpoint.
+                *
+                * A partir daqui o processamento é exatamente
+                * o mesmo utilizado pela integração real.
+            */
+            if (true) {
+                
+                Map<String, Object> mockData =
+                    CalloutServiceResultMock.getMockData(serviceName);
+                
+                body = (String)mockData.get('data');
+                
+                mapCallout.put('isError', false);
+                mapCallout.put('body', body);
+                
+                System.debug(
+                    '>>> DADOS MOCK UTILIZADOS COMO BODY DA INTEGRAÇÃO: ' +
+                    body
+                );
+                
+            } else {
+                if(serviceName.contains('Document')){ 
+                    mapCallout = callout(configService.ServiceName__c,recordId,configService.parameters__c, strColumns); 
+                    String jsonFile = (String)mapCallout.get('body'); 
+                    system.debug('jsonFile '+jsonFile); 
+                    jsonFile = jsonFile.replace('"url":"",','');
+                    
+                    List<JSONDocument> documents =  (List<JSONDocument>)JSON.deserializeStrict(jsonFile,List<JSONDocument>.class);
+                    if(documents.size() > 0) { 
+                        List<JSONDocumentResult> documentsResult = new List<JSONDocumentResult>(); 
+                        for(JSONDocument jsonDoc : documents){
+                            //jsonDoc.documentData.documentContent = filePDF;
+                            documentsResult.add(new JSONDocumentResult(jsonDoc));
+                        } 
+                        body = JSON.serialize(documentsResult); 
+                    }
+                }else{
+                    mapCallout = callout(configService.ServiceName__c,recordId,configService.parameters__c,strColumns);
+                    system.debug('mapCallout>> ' + mapCallout);
+                    body = (String)mapCallout.get('body');
                 }
-            }else{
-                mapCallout = callout(configService.ServiceName__c,recordId,configService.parameters__c,strColumns);
-                system.debug('mapCallout>> ' + mapCallout);
-                body = (String)mapCallout.get('body');
-            }
-            
+            } 
             if((Boolean) mapCallout.get('isError')){ 
                 return mapOutput; 
             }else{
-            //String jsonAttribute = configService.jsonAttribute__c;
-            String bodyResult = body;
-           
-            List<Object> records;
-            /*if(String.isNotBlank(jsonAttribute)){
-                Map<String,Object> mapRecord = (Map<String,Object>)JSON.deserializeUntyped(bodyResult);
-                records = (List<Object>)mapRecord.get(jsonAttribute);
-                bodyResult = JSON.serialize(records);
-            }else{
-            }*/
-            if(configService.ServiceName__c.contains('querySF')){
-            	records = (List<Object>)JSON.deserializeUntyped('['+bodyResult+']');
-            }else{
-            	records = (List<Object>)JSON.deserializeUntyped(bodyResult);
-            }
-            
-            records = applyConfigurationFilter(records, configService.Filter__c);
-            
-			Map<String,Map<String,String>> previewData = new Map<String,Map<String,String>>();
-			Integer index = 0;
-            for(Object objRecord : records){
-                Map<String,Object> mapRecord = (Map<String,Object>)objRecord;
-		        Map<String,String> record = new Map<String,String>();
-                for (String fieldName : mapRecord.keySet()){
-                    if(mapColumn.containsKey(fieldName)){
-                        JSONColumn column = (JSONColumn)mapColumn.get(fieldName);
-                        Object value = mapRecord.get(fieldName);
-                        String data;
-
-                        switch on column.type{
-                            when 'currency'{
-                                if (value != null) {
-                                    data = ((Decimal)value).format();  
-                                }else {
-                                    data = '0';
+                //String jsonAttribute = configService.jsonAttribute__c;
+                String bodyResult = body;
+                
+                List<Object> records;
+                /*if(String.isNotBlank(jsonAttribute)){
+Map<String,Object> mapRecord = (Map<String,Object>)JSON.deserializeUntyped(bodyResult);
+records = (List<Object>)mapRecord.get(jsonAttribute);
+bodyResult = JSON.serialize(records);
+}else{
+}*/
+                if(configService.ServiceName__c.contains('querySF')){
+                    records = (List<Object>)JSON.deserializeUntyped('['+bodyResult+']');
+                }else{
+                    records = (List<Object>)JSON.deserializeUntyped(bodyResult);
+                }
+                
+                records = applyConfigurationFilter(records, configService.Filter__c);
+                
+                Map<String,Map<String,String>> previewData = new Map<String,Map<String,String>>();
+                Integer index = 0;
+                for(Object objRecord : records){
+                    Map<String,Object> mapRecord = (Map<String,Object>)objRecord;
+                    Map<String,String> record = new Map<String,String>();
+                    for (String fieldName : mapRecord.keySet()){
+                        if(mapColumn.containsKey(fieldName)){
+                            JSONColumn column = (JSONColumn)mapColumn.get(fieldName);
+                            Object value = mapRecord.get(fieldName);
+                            String data;
+                            
+                            switch on column.type{
+                                when 'currency'{
+                                    if (value != null) {
+                                        data = ((Decimal)value).format();  
+                                    }else {
+                                        data = '0';
+                                    }
+                                }when 'number'{
+                                    if (value != null) {
+                                        data = ((Decimal)value).format();
+                                    }else {
+                                        data = '0';
+                                    }
+                                }when 'datetime'{
+                                    if (value != null) {
+                                        data = ((DateTime)JSON.deserialize('"'+(String)value + '"',DateTime.class)).format();
+                                    }else {
+                                        data = null;
+                                    }
+                                }when 'date'{
+                                    if (value != null) {
+                                        data =  ((Date)JSON.deserialize('"'+((String)value).replace('T00:00:00','') + '"',Date.class)).format();
+                                    }else {
+                                        data = null;
+                                    }
+                                }when else{
+                                    data = (String)mapRecord.get(fieldName);
                                 }
-                            }when 'number'{
-                                if (value != null) {
-                                    data = ((Decimal)value).format();
-                                }else {
-                                    data = '0';
-                                }
-                            }when 'datetime'{
-                                if (value != null) {
-                                    data = ((DateTime)JSON.deserialize('"'+(String)value + '"',DateTime.class)).format();
-                                }else {
-                                    data = null;
-                                }
-                            }when 'date'{
-                                if (value != null) {
-                                    Date dt = (Date)JSON.deserialize('"'+((String)value).replace('T00:00:00','') + '"', Date.class);
-                                    data = DateTime.newInstance(dt.year(), dt.month(), dt.day()).format('dd/MM/yyyy');
-                                }else {
-                                    data = null;
-                                }
-                            }when else{
-                                data = (String)mapRecord.get(fieldName);
+                                
                             }
                             
-                        }
-
-                        if(column.showDefault){
-							record.put(column.label,data);
-						}
+                            if(column.showDefault){
+                                record.put(column.label,data);
+                            }
                             
-                    }    
+                        }    
+                    }
+                    previewData.put(String.valueOf(index),record); 
+                    index++;
                 }
-				previewData.put(String.valueOf(index),record); 
-                index++;
-            }
-
-            mapOutput.put('columns',configService.Columns__c.replace('"datetime"','"date"'));
-            mapOutput.put('data',JSON.serialize(records));
-            //mapOutput.put('data',bodyResult);
-            mapOutput.put('preview',previewData); 
-          }      
+                
+                mapOutput.put('columns',configService.Columns__c.replace('"datetime"','"date"'));
+                mapOutput.put('data',JSON.serialize(records));
+                //mapOutput.put('data',bodyResult);
+                mapOutput.put('preview',previewData); 
+            }      
         } catch (CalloutException e) {
-
+            
         }
-		
+        
         return mapOutput;
-
-	}
+        
+    }
     
     private static List<Object> applyConfigurationFilter(
         List<Object> records,
@@ -237,16 +248,16 @@ global with sharing class CTR_CalloutServiceResult {
     
     @AuraEnabled
     global static Object getResultServiceRecord(String serviceName, String recordId){
-
+        
         Map<String,String> mapOutput = new Map<String,String>();
-		ConfigurationService__mdt configService = new ConfigurationService__mdt();
-		
+        ConfigurationService__mdt configService = new ConfigurationService__mdt();
+        
         Map<String,Set<String>> configurationFilter = new Map<String,Set<String>>();
         configurationFilter.put('DeveloperName',new Set<String>{serviceName});
-		if (Schema.sObjectType.ConfigurationService__mdt.isAccessible()) {
-			configService = new SEL_ConfigurationServices().selectWithWhere(null, configurationFilter, null).get(0);
+        if (Schema.sObjectType.ConfigurationService__mdt.isAccessible()) {
+            configService = new SEL_ConfigurationServices().selectWithWhere(null, configurationFilter, null).get(0);
         }
-		
+        
         List<JSONColumn> columns = (List<JSONColumn>)JSON.deserialize(configService.Columns__c,List<JSONColumn>.class);
         Map<String,JSONColumn> mapColumn = new Map<String,JSONColumn>();
         List<String> lstColumns = new List<String>();
@@ -257,7 +268,7 @@ global with sharing class CTR_CalloutServiceResult {
             }else{ 
                 lstColumns.add(column.fieldName); 
             }
-	            
+            
         }
         String strColumns = String.join(lstColumns,',');
         
@@ -280,11 +291,11 @@ global with sharing class CTR_CalloutServiceResult {
                 mapOutput.put('data',bodyResult);
             }      
         } catch (CalloutException e) {
-
+            
         }
-		
+        
         return mapOutput;
-	}
+    }
     
     public static Map<String,Object> callout(String calloutName, Id recordId,String jsonParameters, String strColumns){
         String sobjectType = recordId.getSObjectType().getDescribe().getName();
@@ -308,7 +319,7 @@ global with sharing class CTR_CalloutServiceResult {
         urlParamMap.put('%%recordId%%',recordId);
         urlParamMap.put('%%columns%%',strColumns);
         if(String.isNotEmpty(jsonParameters)){
-			List<CTR_CalloutServiceResult.Parameter> parameters = (List<CTR_CalloutServiceResult.Parameter>)JSON.deserializeStrict(jsonParameters,List<CTR_CalloutServiceResult.Parameter>.class);
+            List<CTR_CalloutServiceResult.Parameter> parameters = (List<CTR_CalloutServiceResult.Parameter>)JSON.deserializeStrict(jsonParameters,List<CTR_CalloutServiceResult.Parameter>.class);
             for(CTR_CalloutServiceResult.Parameter parameter : parameters){
                 String value = parameter.value;
                 switch on parameter.value{
@@ -326,7 +337,7 @@ global with sharing class CTR_CalloutServiceResult {
                                         SRV_AuxQueryBase aux = SRV_AuxQueryFactory.getAux(auxQuerySettings.AuxQueryParameters__c);
                                         aux.setEndPointParameters(urlParamMap, sobjectType);
                                     }
-                               }
+                                }
                                 System.debug('Parameter needTokenization value: '+ parameter.needTokenization);
                                 if(parameter.needTokenization=='true'){//por cada parametro que necesite token del endpoint
                                     CalloutSettings__c serviceTokenSetting = CalloutSettings__c.getValues(parameter.serviceToken);//CalloutSetting de servicio Tokenizador
@@ -353,7 +364,7 @@ global with sharing class CTR_CalloutServiceResult {
                 urlParamMap.put('%%' + parameter.name + '%%',value);
             }                        
         }
-
+        
         Map<String,Object> mapOutput = new Map<String,Object>();
         if(!stopCallout){
             SRV_Callouts calloutService = new SRV_Callouts(calloutName);
@@ -369,7 +380,7 @@ global with sharing class CTR_CalloutServiceResult {
         
         return mapOutput;
     }
-
+    
     class JSONColumn{
         public String fieldName;
         public String label;
@@ -377,11 +388,11 @@ global with sharing class CTR_CalloutServiceResult {
         public Boolean isPickList;
         public Boolean showDefault;
     }
-    	
-	class JSONDocumentResult{
-
+    
+    class JSONDocumentResult{
+        
         public JSONDocumentResult(JSONDocument jsonDoc){	
-
+            
             if(jsonDoc.documentData != null){ 
                 this.documentContent = jsonDoc.documentData.documentContent; 
             }
@@ -399,7 +410,7 @@ global with sharing class CTR_CalloutServiceResult {
         public String mimeType;
     }    
     
-	class JSONDocument{
+    class JSONDocument{
         public String documentId;
         public JSONDocumentData documentData;
         public JSONDocumentMetaData documentMetaData;
@@ -409,7 +420,7 @@ global with sharing class CTR_CalloutServiceResult {
         public String documentContent;
     }
     
-	class JSONDocumentMetaData{
+    class JSONDocumentMetaData{
         public String URL;
         public String type;
         public String dateCapture;
