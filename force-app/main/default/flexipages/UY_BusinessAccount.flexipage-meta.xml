@@ -466,7 +466,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>componentTitle</name>
-                    <value>Asistencia</value>
+                    <value>Asistencias</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>iconName</name>

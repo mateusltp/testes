@@ -26,39 +26,59 @@
                 return column.fieldName && this.normalizeValue(this.getFieldValue(row, column.fieldName)).indexOf(searchTerm) !== -1;
             }, this);
         }, this);
-
+        
         component.set('v.displayData', filteredData);
         this.sortData(component);
     },
-
+    
     sortData : function(component) {
         var fieldName = component.get('v.sortedBy');
         if (!fieldName) {
             return;
         }
-
+        
         var direction = component.get('v.sortedDirection') === 'desc' ? -1 : 1;
         var data = (component.get('v.displayData') || []).slice();
+        var columns = component.get('v.displayColumns') || [];
+        var column = columns.find(function(item) {
+            return item.fieldName === fieldName;
+        });
+        
         data.sort(function(firstRow, secondRow) {
             var firstValue = this.getFieldValue(firstRow, fieldName);
             var secondValue = this.getFieldValue(secondRow, fieldName);
+            
             if (firstValue === secondValue) {
                 return 0;
             }
+            
             if (firstValue === null || firstValue === undefined) {
                 return -1 * direction;
             }
+            
             if (secondValue === null || secondValue === undefined) {
                 return direction;
             }
+            
             if (typeof firstValue === 'number' && typeof secondValue === 'number') {
                 return (firstValue - secondValue) * direction;
             }
+            
+            if (column && column.sortType === 'date') {
+                var firstDate = this.parseDateValue(firstValue);
+                var secondDate = this.parseDateValue(secondValue);
+                
+                if (firstDate !== null && secondDate !== null) {
+                    return (firstDate - secondDate) * direction;
+                }
+            }
+            
             return String(firstValue).localeCompare(String(secondValue), undefined, {
                 numeric: true,
                 sensitivity: 'base'
             }) * direction;
         }.bind(this));
+        
         component.set('v.displayData', data);
     },
 
@@ -133,5 +153,22 @@
         
     },
     
-       
+    parseDateValue : function(value) {
+        if (typeof value !== 'string') {
+            return null;
+        }
+        
+        var match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        
+        if (!match) {
+            return null;
+        }
+        
+        return new Date(
+            parseInt(match[3], 10),
+            parseInt(match[2], 10) - 1,
+            parseInt(match[1], 10)
+        ).getTime();
+    }, 
+    
 })

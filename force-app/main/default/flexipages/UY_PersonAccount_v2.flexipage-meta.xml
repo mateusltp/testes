@@ -40,6 +40,10 @@
                     <value>false</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
+                    <name>hideSlackAction</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
                     <name>numVisibleActions</name>
                     <value>3</value>
                 </componentInstanceProperties>
@@ -456,7 +460,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>componentTitle</name>
-                    <value>Asistencia</value>
+                    <value>Asistencias</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>iconName</name>

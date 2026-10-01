@@ -7,7 +7,7 @@
         <value xsi:type="xsd:string">[
 {&quot;fieldName&quot;:&quot;claimNumber&quot;,&quot;label&quot;:&quot;Número Siniestro&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true},
 {&quot;fieldName&quot;:&quot;claimDesc&quot;,&quot;label&quot;:&quot;Desc. Siniestro&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true},
-{&quot;fieldName&quot;:&quot;openDate&quot;,&quot;label&quot;:&quot;Fecha de apertura&quot;,&quot;type&quot;:&quot;date&quot;,&quot;showDefault&quot;:true},
+{&quot;fieldName&quot;:&quot;openDate&quot;,&quot;label&quot;:&quot;Fecha de apertura&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true, &quot;sortType&quot;: &quot;date&quot;},
 {&quot;fieldName&quot;:&quot;status&quot;,&quot;label&quot;:&quot;Estado&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true},
 {&quot;fieldName&quot;:&quot;policyId&quot;,&quot;label&quot;:&quot;Num Poliza&quot;,&quot;type&quot;:&quot;string&quot;,&quot;showDefault&quot;:true}
 ]</value>
@@ -15,6 +15,14 @@
     <values>
         <field>Country__c</field>
         <value xsi:type="xsd:string">LO_UY</value>
+    </values>
+    <values>
+        <field>FieldFormat__c</field>
+        <value xsi:type="xsd:string">{
+&quot;openDate&quot;: {
+&quot;format&quot;: &quot;dd/MM/yyyy&quot;
+}
+}</value>
     </values>
     <values>
         <field>Filter__c</field>

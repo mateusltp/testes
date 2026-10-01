@@ -89,9 +89,8 @@ global with sharing class CTR_CalloutServiceResult {
                 }
                 
                 records = applyConfigurationFilter(records, configService.Filter__c);
+                records = applyFieldFormat(records, configService.FieldFormat__c);
                 
-                Boolean isUYUser = SEL_Users.newInstance().selectById(UserInfo.getUserId()).get(0).ISOCode__c == 'UY';
-
                 Map<String,Map<String,String>> previewData = new Map<String,Map<String,String>>();
                 Integer index = 0;
                 for(Object objRecord : records){
@@ -124,12 +123,7 @@ global with sharing class CTR_CalloutServiceResult {
                                     }
                                 }when 'date'{
                                     if (value != null) {
-                                        Date dt = (Date)JSON.deserialize('"' + ((String)value).replace('T00:00:00','') + '"',Date.class);
-                                        if(isUYUser){
-                                            data = DateTime.newInstance(dt.year(),dt.month(),dt.day()).format('dd/MM/yyyy');
-                                        }else{
-                                            data =  dt.format();
-                                        }
+                                        data =  ((Date)JSON.deserialize('"'+((String)value).replace('T00:00:00','') + '"',Date.class)).format();
                                     }else {
                                         data = null;
                                     }
@@ -162,23 +156,16 @@ global with sharing class CTR_CalloutServiceResult {
         
     }
     
-    private static List<Object> applyConfigurationFilter(
-        List<Object> records,
-        String filterJson
-    ){
-        if(records == null || records.isEmpty() || String.isBlank(filterJson)){
-            return records;
-        }
+    private static List<Object> applyConfigurationFilter(List<Object> records,String filterJson){
+        
+        if(records == null || records.isEmpty() || String.isBlank(filterJson)){return records;}
         
         Map<String, Object> filterConfig;
         
         try {
             filterConfig = (Map<String, Object>) JSON.deserializeUntyped(filterJson);
         } catch(Exception e){
-            System.debug(
-                '>>> [CTR_CalloutServiceResult] Erro ao interpretar Filter__c: ' +
-                e.getMessage()
-            );
+            System.debug('>>> [CTR_CalloutServiceResult] Erro ao interpretar Filter__c: ' + e.getMessage());
             return records;
         }
         
@@ -187,12 +174,7 @@ global with sharing class CTR_CalloutServiceResult {
         
         List<Object> filterValues = (List<Object>) filterConfig.get('values');
         
-        if(
-            String.isBlank(fieldName) ||
-            String.isBlank(filterType) ||
-            filterValues == null ||
-            filterValues.isEmpty()
-        ){
+        if(String.isBlank(fieldName) || String.isBlank(filterType) || filterValues == null || filterValues.isEmpty()){
             return records;
         }
         
@@ -208,12 +190,9 @@ global with sharing class CTR_CalloutServiceResult {
         
         for(Object record : records){
             
-            Map<String, Object> recordMap =
-                (Map<String, Object>) record;
+            Map<String, Object> recordMap = (Map<String, Object>) record;
             
-            String recordValue = recordMap.containsKey(fieldName)
-                ? String.valueOf(recordMap.get(fieldName))
-                : null;
+            String recordValue = recordMap.containsKey(fieldName) ? String.valueOf(recordMap.get(fieldName)) : null;
             
             Boolean containsValue = values.contains(recordValue);
             
@@ -227,6 +206,83 @@ global with sharing class CTR_CalloutServiceResult {
         }
         
         return filteredRecords;
+    }
+    
+    private static List<Object> applyFieldFormat( List<Object> records, String fieldFormatJson) {
+        
+        if (records == null || records.isEmpty() || String.isBlank(fieldFormatJson)) {
+            return records;
+        }
+        
+        Map<String, Object> formatConfig;
+        
+        try {
+            formatConfig = (Map<String, Object>) JSON.deserializeUntyped(fieldFormatJson);
+        } catch (Exception e) {
+            System.debug('>>> [CTR_CalloutServiceResult] Erro ao interpretar FieldFormat__c: ' + e.getMessage()
+            );
+            return records;
+        }
+        
+        if (formatConfig == null || formatConfig.isEmpty()) {
+            return records;
+        }
+        
+        for (Object record : records) {
+            
+            Map<String, Object> recordMap =
+                (Map<String, Object>) record;
+            
+            for (String fieldName : recordMap.keySet()) {
+
+                if (!formatConfig.containsKey(fieldName)) {continue;}
+                
+                Object fieldConfigObj = formatConfig.get(fieldName);
+                
+                if (!(fieldConfigObj instanceof Map<String, Object>)) {
+                    continue;
+                }
+                
+                Map<String, Object> fieldConfig = (Map<String, Object>) fieldConfigObj;
+                
+                String format = (String) fieldConfig.get('format');
+                
+                Object value = recordMap.get(fieldName);
+                
+                if (value == null || String.isBlank(format)) {
+                    continue;
+                }
+                
+                try {
+                    
+                    String dateValue = String.valueOf(value).replace('T00:00:00', '');
+                    
+                    Date dt = (Date) JSON.deserialize('"' + dateValue + '"', Date.class);
+                    
+                    String formattedValue =
+                        DateTime.newInstance(
+                            dt.year(),
+                            dt.month(),
+                            dt.day()
+                        ).format(format);
+                    
+                    recordMap.put(
+                        fieldName,
+                        formattedValue
+                    );
+                    
+                } catch (Exception e) {
+                    
+                    System.debug(
+                        '>>> [CTR_CalloutServiceResult] Erro ao formatar campo ' +
+                        fieldName + ': ' +
+                        e.getMessage()
+                    );
+                }
+            }
+        }
+        
+        return records;
     }
     
     @AuraEnabled
@@ -370,6 +426,7 @@ global with sharing class CTR_CalloutServiceResult {
         public String type;
         public Boolean isPickList;
         public Boolean showDefault;
+        public String sortType;
     }
     
     class JSONDocumentResult{
