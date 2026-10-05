@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 
+    <!-- Package CLIENT-4634 -->
+    <types>
+        <members>Opportunity.ManagersOffice__c</members>
+        <name>CustomField</name>
+    </types>
+   
+
     <!-- Package RF02478409 SD07980472 CLIENT-4531 
     <types>
         <members>TaskStatus</members>
@@ -31,7 +38,7 @@
     </types>
     -->
 
-    <!-- Package RF02468741 SD07955785 CLIENT-4356 -->
+    <!-- Package RF02468741 SD07955785 CLIENT-4356 
 
       <types>
         <members>CTR_CalloutServiceResult</members>
@@ -39,6 +46,7 @@
     </types>
     <types>
         <members>ConfigurationService__mdt.Filter__c</members>
+        <members>ConfigurationService__mdt.FieldFormat__c</members>
         <name>CustomField</name>
     </types>
     <types>
@@ -48,6 +56,7 @@
     <types>
         <members>ConfigurationService.UY_ClaimsByCustomer</members>
         <members>ConfigurationService.UY_AssistanceByCustomer</members>
+        <members>ConfigurationService.UY_BillsByCustomer</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -55,7 +64,11 @@
         <members>UY_PersonAccount_v2</members>
         <name>FlexiPage</name>
     </types>
-  
+        <types>
+        <members>CMP_ModalDataTableCalloutResults</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+    -->
 
     <!-- Package RF02472257 SD07964845 CLIENT-4460 
       <types>
