@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CO 29945</label>
+    <protected>false</protected>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>AuthParams__c</field>
+        <value xsi:type="xsd:string">usrsalforsgoprd;pHAn34obJI4X*</value>
+    </values>
+    <values>
+        <field>Authentication__c</field>
+        <value xsi:type="xsd:string">Basic</value>
+    </values>
+    <values>
+        <field>BusinessLine__c</field>
+        <value xsi:type="xsd:string">01</value>
+    </values>
+    <values>
+        <field>Endpoint__c</field>
+        <value xsi:type="xsd:string">https://sgo.mapfre.com.co/servicios/restv2/instantiateSGO/consulta</value>
+    </values>
+    <values>
+        <field>FlowName__c</field>
+        <value xsi:type="xsd:string">Cotización - Emisión autos colectivo</value>
+    </values>
+    <values>
+        <field>HTTPMethod__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>Mapping__c</field>
+        <value xsi:type="xsd:string">{
+	&quot;processId&quot;: &quot;29945&quot;,
+	&quot;attributes&quot;: [
+		{
+			&quot;code&quot;: &quot;3182&quot;,
+			&quot;value&quot;: &quot;{!Intermediary__r.Code__c}&quot;
+		},
+		{
+			&quot;code&quot;: &quot;28718&quot;,
+			&quot;value&quot;: &quot;{!ManagersOffice__r.Code__c}&quot;
+		},
+		{
+			&quot;code&quot;: &quot;28714&quot;,
+			&quot;value&quot;: &quot;{!ManagersOffice__r.Parent.Parent.Code__c}&quot;
+		},
+		{
+			&quot;code&quot;: &quot;13742&quot;,
+			&quot;value&quot;: &quot;{!Intermediary__r.Name}&quot;
+		},
+                {
+			&quot;code&quot;: &quot;28715&quot;,
+			&quot;value&quot;: &quot;{!Intermediary__r.Type__c}&quot;
+		},
+		{
+			&quot;code&quot;: &quot;28717&quot;,
+			&quot;value&quot;: &quot;{!Account.DocumentType__c}&quot;
+		},
+		{
+			&quot;code&quot;: &quot;3111&quot;,
+			&quot;value&quot;: &quot;{!Account.DocumentNumber__c}&quot;
+		},
+		{
+			&quot;code&quot;: &quot;2810&quot;,
+			&quot;value&quot;: &quot;{!Account.Name}&quot;
+		},
+		{
+			&quot;code&quot;: &quot;23563&quot;,
+			&quot;value&quot;: &quot;{!Amount}&quot;
+		},
+        {
+            &quot;code&quot;: &quot;40244&quot;,
+            &quot;value&quot;: &quot;{!ManagersOffice__r.Name}&quot;
+        }
+	],
+	&quot;user&quot;: &quot;{!User.Alias}&quot;
+}</value>
+    </values>
+    <values>
+        <field>ObjectName__c</field>
+        <value xsi:type="xsd:string">Opportunity</value>
+    </values>
+    <values>
+        <field>ProcessId__c</field>
+        <value xsi:type="xsd:string">29945</value>
+    </values>
+</CustomMetadata>
